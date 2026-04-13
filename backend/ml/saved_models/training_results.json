@@ -1,0 +1,31 @@
+{
+  "random_forest": {
+    "accuracy": 1.0
+  },
+  "xgboost": {
+    "accuracy": 1.0
+  },
+  "isolation_forest": {
+    "contamination": 0.15
+  },
+  "feature_importance": {
+    "login_hour": 0.0012725557735275136,
+    "login_day": 1.4198820469002055e-07,
+    "is_new_device": 0.030097796446028887,
+    "is_new_location": 0.015539464217936998,
+    "is_new_browser": 3.5999309405787925e-06,
+    "failed_attempts_before": 0.0313545711887837,
+    "login_frequency": 0.1011640370308729,
+    "session_duration": 0.15063004742563366,
+    "typing_speed": 0.0034489055498635574,
+    "mouse_entropy": 0.200949660372726,
+    "pages_visited": 0.04790957234733523,
+    "actions_per_minute": 0.23254512153468154,
+    "time_since_last_login": 0.15870954216634564,
+    "is_vpn": 7.659576498162951e-16,
+    "country_change": 0.026329616615034416,
+    "device_type_encoded": 5.172877118513319e-06,
+    "hour_sin": 5.760819879457034e-16,
+    "hour_cos": 4.019453496494378e-05
+  }
+}
