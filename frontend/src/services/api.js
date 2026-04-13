@@ -64,4 +64,8 @@ export const adminAPI = {
   getModelPerformance: () => api.get("/admin/model-performance"),
 };
 
+export const analysisAPI = {
+  getSocialInsights: () => api.get("/analysis/social-insights"),
+};
+
 export default api;

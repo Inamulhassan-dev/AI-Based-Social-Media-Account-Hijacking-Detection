@@ -45,10 +45,10 @@ if errorlevel 1 (
 )
 
 echo Launching backend...
-start "%BACKEND_WINDOW%" cmd /k "call \"%BACKEND_DIR%\run_backend.bat\""
+start "%BACKEND_WINDOW%" /D "%BACKEND_DIR%" cmd /k "call run_backend.bat"
 
 echo Launching frontend...
-start "%FRONTEND_WINDOW%" cmd /k "call \"%FRONTEND_DIR%\run_frontend.bat\""
+start "%FRONTEND_WINDOW%" /D "%FRONTEND_DIR%" cmd /k "call run_frontend.bat"
 
 > .runtime\windows.info echo BACKEND_WINDOW=%BACKEND_WINDOW%
 >> .runtime\windows.info echo FRONTEND_WINDOW=%FRONTEND_WINDOW%

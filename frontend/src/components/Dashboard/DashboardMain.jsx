@@ -3,23 +3,25 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import { FiAlertTriangle, FiCheckCircle, FiClock, FiGlobe, FiMapPin, FiShield } from "react-icons/fi";
 import toast from "react-hot-toast";
 
-import { alertAPI, dashboardAPI } from "../../services/api";
+import { alertAPI, analysisAPI, dashboardAPI } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 
 export default function DashboardMain() {
   const [data, setData] = useState(null);
   const [feed, setFeed] = useState([]);
   const [securityScore, setSecurityScore] = useState({ security_score: 100, weekly_trend: [], tips: [] });
+  const [socialInsights, setSocialInsights] = useState(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
   useEffect(() => {
     const load = () => {
-      Promise.all([dashboardAPI.getSummary(), alertAPI.getLiveFeed(10), alertAPI.getSecurityScore()])
-        .then(([summaryRes, feedRes, scoreRes]) => {
+      Promise.all([dashboardAPI.getSummary(), alertAPI.getLiveFeed(10), alertAPI.getSecurityScore(), analysisAPI.getSocialInsights()])
+        .then(([summaryRes, feedRes, scoreRes, socialRes]) => {
           setData(summaryRes.data);
           setFeed(feedRes.data.events || []);
           setSecurityScore(scoreRes.data || { security_score: 100, weekly_trend: [], tips: [] });
+          setSocialInsights(socialRes.data?.social_insights || null);
         })
         .catch(() => setData(null))
         .finally(() => setLoading(false));
@@ -264,6 +266,75 @@ export default function DashboardMain() {
             {(securityScore.tips?.length ? securityScore.tips : ["Enable 2FA", "Review unknown devices", "Rotate passwords regularly"]).slice(0, 3).map((tip) => (
               <p key={tip}>- {tip}</p>
             ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-4">
+        <div className="cyber-card p-6 lg:col-span-2">
+          <h3 className="text-lg font-semibold mb-2">Social Media Threat Insights</h3>
+          <p className="text-xs text-slate-400 mb-4">Signals focused on social-account hijacking behavior in the last 30 days.</p>
+
+          {socialInsights ? (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="cyber-card p-3">
+                  <p className="metric-label">Takeover Risk</p>
+                  <p className="metric-value text-rose-300">{Math.round((socialInsights.takeover_risk_score || 0) * 100)}%</p>
+                </div>
+                <div className="cyber-card p-3">
+                  <p className="metric-label">New Device Rate</p>
+                  <p className="metric-value text-amber-300">{Math.round((socialInsights.signals?.new_device_rate || 0) * 100)}%</p>
+                </div>
+                <div className="cyber-card p-3">
+                  <p className="metric-label">Geo Anomaly Rate</p>
+                  <p className="metric-value text-sky-300">{Math.round((socialInsights.signals?.new_location_rate || 0) * 100)}%</p>
+                </div>
+                <div className="cyber-card p-3">
+                  <p className="metric-label">Impossible Travel</p>
+                  <p className="metric-value text-fuchsia-300">{socialInsights.signals?.impossible_travel_count || 0}</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {(socialInsights.platform_risk_tags || []).map((tag) => (
+                  <span key={tag} className="text-xs px-2 py-1 rounded-full border border-slate-500/40 text-slate-200 bg-slate-900/50">
+                    {tag.replaceAll("_", " ")}
+                  </span>
+                ))}
+              </div>
+
+              <div className="text-sm text-slate-200 space-y-1">
+                {(socialInsights.recommended_actions || []).slice(0, 3).map((action) => (
+                  <p key={action}>- {action}</p>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-slate-300">No social-media risk signals yet.</p>
+          )}
+        </div>
+
+        <div className="cyber-card p-6">
+          <h3 className="text-lg font-semibold">Platform Safety Mode</h3>
+          <p className="text-xs text-slate-400 mt-1">Recommended status from social insight engine.</p>
+          <div
+            className={`mt-4 inline-flex px-3 py-1 rounded-full border text-xs ${
+              socialInsights?.risk_level === "critical"
+                ? "text-rose-300 border-rose-400/40 bg-rose-500/10"
+                : socialInsights?.risk_level === "high"
+                  ? "text-amber-300 border-amber-400/40 bg-amber-500/10"
+                  : socialInsights?.risk_level === "medium"
+                    ? "text-sky-300 border-sky-400/40 bg-sky-500/10"
+                    : "text-emerald-300 border-emerald-400/40 bg-emerald-500/10"
+            }`}
+          >
+            {(socialInsights?.risk_level || "low").toUpperCase()}
+          </div>
+          <div className="mt-4 space-y-2 text-sm text-slate-200">
+            <p><span className="text-slate-400">Suspicious rate:</span> {Math.round((socialInsights?.signals?.suspicious_login_rate || 0) * 100)}%</p>
+            <p><span className="text-slate-400">VPN usage:</span> {Math.round((socialInsights?.signals?.vpn_usage_rate || 0) * 100)}%</p>
+            <p><span className="text-slate-400">Off-hours activity:</span> {Math.round((socialInsights?.signals?.off_hours_activity_rate || 0) * 100)}%</p>
           </div>
         </div>
       </div>

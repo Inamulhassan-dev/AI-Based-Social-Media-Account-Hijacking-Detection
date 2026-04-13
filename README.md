@@ -1,62 +1,101 @@
 # AI-Based Social Media Account Hijacking Detection
 
-Full-stack project with:
-- Backend: Flask + SQLAlchemy + JWT + Socket.IO
-- Frontend: React + Vite + Tailwind
-- ML: behavior anomaly detection models
+Professional full-stack security platform for detecting suspicious login behavior and possible social media account takeover attempts.
 
-## Current Readiness Status
+## Why This Project Matters Today
 
-The project is mostly ready to run and upload to GitHub.
+Social media account hijacking is one of the fastest-growing security problems for students, creators, freelancers, and businesses. This system helps detect suspicious behavior early by combining:
 
-Verified checks:
-- Frontend production build passes (`npm run build`).
-- Backend Python syntax compile passes.
-- VS Code diagnostics currently report no code errors.
+- Rule-based risk scoring
+- ML anomaly scoring
+- Real-time alerts and risk feed
+- Social-media-focused threat insights
 
-Not a blocker, but note:
-- Frontend bundle is large and Vite warns about chunk size. This is optimization work, not a startup failure.
+It is useful for today's generation because many people use social apps as identity, business, and communication channels. Early hijacking detection reduces account loss, data leakage, and reputation damage.
 
-## Prerequisites
+## What This System Analyzes
 
-On Windows:
-- Python 3.11+ (project was designed around 3.11)
-- Node.js LTS
-- npm
-- Git
-- Optional: Docker Desktop (for containerized run)
+The backend analyzes login telemetry and behavior signals such as:
 
-## Fastest Setup (Windows Scripts)
+- Device fingerprint and new device detection
+- New location and impossible travel patterns
+- Unusual login times
+- VPN/proxy usage indicators
+- Failed login attempts and brute-force patterns
+- ML ensemble anomaly score
 
-From project root, run in this order:
+The dashboard then visualizes:
+
+- Current risk score
+- Risk history trend
+- Alert severity and live security feed
+- Country-based threat map
+- Social media threat insights panel
+
+## Main Features
+
+- Secure authentication with JWT
+- Login risk scoring engine
+- ML-powered anomaly detection
+- Real-time alerting and security feed
+- Threat map and impossible travel detection
+- Social insights endpoint for takeover risk summary
+- Admin views for users, alerts, and model performance
+
+## Roles and Access
+
+- First registered account becomes `admin`
+- Later accounts become `user`
+- Admin can unlock users and manage alerts
+- Users can view their own dashboard, alerts, and risk history
+
+## Tech Stack
+
+- Backend: Flask, SQLAlchemy, Flask-JWT-Extended, Flask-SocketIO
+- Frontend: React, Vite, Tailwind CSS
+- ML/Data: scikit-learn, XGBoost, pandas, numpy
+- Database: SQLite (default)
+
+## Project Structure
+
+```text
+backend/
+	app.py
+	routes/
+	services/
+	models/
+	ml/
+frontend/
+	src/
+	components/
+	pages/
+docker-compose.yml
+setup_windows.bat
+start_project.bat
+stop_project.bat
+```
+
+## Step-by-Step Setup (Windows)
+
+### Option A: Automatic Setup (Recommended)
+
+From project root, run:
 
 1. `setup_windows.bat`
 2. `start_project.bat`
-3. `stop_project.bat` (when done)
 
-What each script does:
+Then open:
 
-1. `setup_windows.bat`
-- Checks/installs Python, Node, Git via winget.
-- Creates `backend/venv`.
-- Installs backend and frontend dependencies.
-- Creates `backend/.env` from `backend/.env.example`.
-- Attempts first-time ML bootstrap.
-
-2. `start_project.bat`
-- Starts backend and frontend in separate terminal windows.
-- Uses `backend/run_backend.bat` and `frontend/run_frontend.bat`.
-
-3. `stop_project.bat`
-- Stops both windows/processes by window title.
-
-Open:
-- Frontend: http://localhost:3000
+- Frontend app: http://localhost:3000
 - Backend health: http://localhost:5000/api/health
 
-## Manual Setup (No Scripts)
+To stop both services:
 
-### Backend
+3. `stop_project.bat`
+
+### Option B: Manual Setup
+
+#### Backend
 
 ```powershell
 cd backend
@@ -67,7 +106,7 @@ copy .env.example .env
 python app.py
 ```
 
-### Frontend
+#### Frontend
 
 ```powershell
 cd frontend
@@ -76,111 +115,122 @@ npm install
 npm run dev
 ```
 
-## Environment Variables
+## Environment Configuration
 
-### Backend: `backend/.env`
+### Backend `.env`
 
-Required to review/change before production:
+Key variables to review:
+
 - `SECRET_KEY`
 - `JWT_SECRET_KEY`
-- `FLASK_DEBUG`
+- `DATABASE_URL`
 - `FRONTEND_ORIGIN`
+- `FLASK_DEBUG`
 - `JWT_COOKIE_SECURE`
-- Mail credentials (`MAIL_USERNAME`, `MAIL_PASSWORD`) if email features are used
+- `MAIL_USERNAME`
+- `MAIL_PASSWORD`
 
-### Frontend: `frontend/.env`
-
-`VITE_API_BASE_URL` controls API target.
-
-Default example:
+### Frontend `.env`
 
 ```env
 VITE_API_BASE_URL=http://localhost:5000/api
 ```
 
-## Docker Setup
+## API Overview
 
-1. Ensure `backend/.env` exists (copy from example if needed).
-2. Build and run:
+Important API groups:
+
+- Auth: `/api/auth/*`
+- Dashboard: `/api/dashboard/*`
+- Alerts: `/api/alerts/*`
+- Analysis: `/api/analysis/*`
+- Admin: `/api/admin/*`
+
+Social insights endpoint:
+
+- `GET /api/analysis/social-insights` (JWT required)
+
+## How To Use the App
+
+1. Register your first account (this becomes admin).
+2. Login and open the dashboard.
+3. Review risk score, alerts, and threat map.
+4. Use demo scenarios (if available in UI) to simulate suspicious events.
+5. Check alerts and take actions (mark legit, report suspicious, lock behavior).
+6. Use admin panel for user/alert oversight.
+
+## Docker Setup
 
 ```powershell
 docker compose up --build
 ```
 
-3. Access:
+Access:
+
 - Frontend: http://localhost:3000
 - Backend: http://localhost:5000
 
-## How To Check Errors / Malfunctions
+## Troubleshooting
 
-### 1) Backend health endpoint
+1. Frontend not opening:
+- Verify Node.js and npm are installed
+- Re-run `setup_windows.bat`
 
-Open:
-- `http://localhost:5000/api/health`
+2. Backend not starting:
+- Confirm `backend/.env` exists
+- Confirm Python venv exists at `backend/venv`
 
-Expected JSON:
-- `status: healthy`
+3. CORS/API errors:
+- Ensure `FRONTEND_ORIGIN` matches frontend URL
+- Ensure `VITE_API_BASE_URL` points to backend API
 
-### 2) Frontend build check
+4. Port conflicts:
+- Free ports `3000` and `5000` or change config
 
-```powershell
-cd frontend
-npm run build
-```
+## Production Notes
 
-### 3) Backend syntax check
+- Set strong random values for `SECRET_KEY` and `JWT_SECRET_KEY`
+- Set `FLASK_DEBUG=false`
+- Use HTTPS and set `JWT_COOKIE_SECURE=true`
+- Use a production database instead of SQLite for scale
 
-```powershell
-cd ..
-backend\venv\Scripts\python.exe -m compileall backend
-```
+## GitHub Upload Guide
 
-### 4) Typical issues
-
-- Port conflict on `3000` or `5000`: stop other apps using those ports.
-- CORS errors: ensure backend `FRONTEND_ORIGIN` matches frontend URL.
-- Missing Python/Node: rerun `setup_windows.bat`.
-- Docker startup issues: confirm Docker Desktop is running.
-
-## GitHub Upload Guide (Full)
-
-This workspace is not initialized as a Git repository yet.
-
-From project root:
+If this is a new repo:
 
 ```powershell
 git init
 git branch -M main
 git add .
-git commit -m "Initial commit: AI Hijacking Detection"
-```
-
-Create an empty GitHub repository, then connect and push:
-
-```powershell
+git commit -m "Initial commit: AI-Based Social Media Account Hijacking Detection"
 git remote add origin https://github.com/<your-username>/<your-repo>.git
 git push -u origin main
 ```
 
-## Important Git Safety
+If repo already exists locally:
 
-Already ignored by `.gitignore`:
-- `backend/.env`
-- `backend/venv/`
-- `frontend/node_modules/`
-- `frontend/dist/`
-- local runtime/editor folders
+```powershell
+git add .
+git commit -m "Update project documentation and features"
+git push
+```
 
-Before pushing, run:
+Before pushing, always verify:
 
 ```powershell
 git status
 ```
 
-Verify no secrets are staged.
+## Roadmap
 
-## Suggested Next Improvements
+Planned improvements:
 
-1. Add automated tests for backend routes and auth flow.
-2. Add CI (GitHub Actions) for lint + build checks on each push.
-3. Split large frontend bundle with lazy routes/dynamic imports.
+1. Session takeover controls (view/revoke active sessions)
+2. DM phishing/scam content detector
+3. Social action anomaly detection (mass follow/unfollow, spam bursts)
+4. Automated backend/frontend tests
+5. CI pipeline with GitHub Actions
+
+## License
+
+Add your preferred open-source license (MIT, Apache-2.0, etc.) before public release.
