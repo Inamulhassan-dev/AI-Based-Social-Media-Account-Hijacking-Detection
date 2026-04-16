@@ -1,10 +1,14 @@
 backend/.env
 backend/venv/
 backend/__pycache__/
+backend/**/__pycache__/
 backend/**/*.pyc
+backend/*.pyc
 backend/instance/
 backend/*.db
+backend/data/*.csv
 backend/ml/saved_models/*.pkl
+backend/ml/saved_models/*.json
 
 frontend/.env
 frontend/node_modules/
@@ -16,3 +20,5 @@ frontend/dist/
 # OS/editor noise
 .DS_Store
 Thumbs.db
+*.egg-info/
+.pytest_cache/

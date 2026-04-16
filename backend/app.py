@@ -69,7 +69,8 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    if not os.path.exists("ml/saved_models/random_forest.pkl"):
+    _model_check = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ml", "saved_models", "random_forest.pkl")
+    if not os.path.exists(_model_check):
         logger.info("Training ML models for first time...")
         os.makedirs("data", exist_ok=True)
         from ml.generate_dataset import generate_dataset
