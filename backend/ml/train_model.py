@@ -9,6 +9,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from xgboost import XGBClassifier
 
+# Resolve paths relative to the backend root regardless of working directory.
+_BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_DATA_PATH = os.path.join(_BACKEND_DIR, "data", "user_behavior_dataset.csv")
+_MODELS_DIR = os.path.join(_BACKEND_DIR, "ml", "saved_models")
+
 FEATURE_COLUMNS = [
     "login_hour",
     "login_day",
@@ -32,14 +37,14 @@ FEATURE_COLUMNS = [
 
 
 def train_all_models():
-    os.makedirs("ml/saved_models", exist_ok=True)
-    df = pd.read_csv("data/user_behavior_dataset.csv")
+    os.makedirs(_MODELS_DIR, exist_ok=True)
+    df = pd.read_csv(_DATA_PATH)
     X = df[FEATURE_COLUMNS]
     y = df["is_hijacked"]
 
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
-    joblib.dump(scaler, "ml/saved_models/scaler.pkl")
+    joblib.dump(scaler, os.path.join(_MODELS_DIR, "scaler.pkl"))
 
     X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42, stratify=y)
 
@@ -51,7 +56,7 @@ def train_all_models():
     rf_acc = accuracy_score(y_test, rf_pred)
     print("Random Forest Accuracy:", round(rf_acc, 4))
     print(classification_report(y_test, rf_pred))
-    joblib.dump(rf, "ml/saved_models/random_forest.pkl")
+    joblib.dump(rf, os.path.join(_MODELS_DIR, "random_forest.pkl"))
     results["random_forest"] = {"accuracy": rf_acc}
 
     xgb = XGBClassifier(
@@ -67,17 +72,17 @@ def train_all_models():
     xgb_acc = accuracy_score(y_test, xgb_pred)
     print("XGBoost Accuracy:", round(xgb_acc, 4))
     print(classification_report(y_test, xgb_pred))
-    joblib.dump(xgb, "ml/saved_models/xgboost_model.pkl")
+    joblib.dump(xgb, os.path.join(_MODELS_DIR, "xgboost_model.pkl"))
     results["xgboost"] = {"accuracy": xgb_acc}
 
     iso = IsolationForest(n_estimators=100, contamination=0.15, random_state=42)
     iso.fit(X_scaled[y == 0])
-    joblib.dump(iso, "ml/saved_models/isolation_forest.pkl")
+    joblib.dump(iso, os.path.join(_MODELS_DIR, "isolation_forest.pkl"))
     results["isolation_forest"] = {"contamination": 0.15}
 
     results["feature_importance"] = dict(zip(FEATURE_COLUMNS, rf.feature_importances_.tolist()))
 
-    with open("ml/saved_models/training_results.json", "w", encoding="utf-8") as file:
+    with open(os.path.join(_MODELS_DIR, "training_results.json"), "w", encoding="utf-8") as file:
         json.dump(results, file, indent=2)
 
     print("All models trained and saved successfully")

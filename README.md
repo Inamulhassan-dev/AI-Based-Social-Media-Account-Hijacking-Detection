@@ -1,5 +1,7 @@
 # AI-Based Social Media Account Hijacking Detection
 
+![CI](https://github.com/Inamulhassan-dev/AI-Based-Social-Media-Account-Hijacking-Detection/actions/workflows/ci.yml/badge.svg)
+
 Professional full-stack security platform for detecting suspicious login behavior and possible social media account takeover attempts.
 
 ## Why This Project Matters Today
@@ -75,9 +77,9 @@ start_project.bat
 stop_project.bat
 ```
 
-## Step-by-Step Setup (Windows)
+## Step-by-Step Setup
 
-### Option A: Automatic Setup (Recommended)
+### Option A: Automatic Setup (Windows)
 
 From project root, run:
 
@@ -93,7 +95,7 @@ To stop both services:
 
 3. `stop_project.bat`
 
-### Option B: Manual Setup
+### Option B: Manual Setup (Windows)
 
 #### Backend
 
@@ -115,7 +117,59 @@ npm install
 npm run dev
 ```
 
-## Environment Configuration
+### Option C: Manual Setup (Linux / macOS)
+
+#### Backend
+
+```bash
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+python app.py
+```
+
+#### Frontend
+
+```bash
+cd frontend
+cp .env.example .env
+npm install
+npm run dev
+```
+
+Then open:
+
+- Frontend app: http://localhost:3000
+- Backend health: http://localhost:5000/api/health
+
+## Datasets & ML Models
+
+The project generates its own synthetic dataset and trains ML models on first startup — **no external downloads required**.
+
+### How it works
+
+1. On first run (`python app.py` from `backend/`), the app detects missing models and automatically:
+   - Generates `backend/data/user_behavior_dataset.csv` (6 000 synthetic login records)
+   - Trains three models and saves them to `backend/ml/saved_models/`:
+     - `random_forest.pkl`
+     - `xgboost_model.pkl`
+     - `isolation_forest.pkl`
+     - `scaler.pkl`
+     - `training_results.json`
+
+2. You can also trigger this manually:
+
+   ```bash
+   cd backend
+   source venv/bin/activate   # Windows: venv\Scripts\activate
+   python -c "from ml.generate_dataset import generate_dataset; from ml.train_model import train_all_models; generate_dataset(); train_all_models()"
+   ```
+
+> The generated dataset and trained model files are excluded from version control via `.gitignore`.
+
+
 
 ### Backend `.env`
 
@@ -229,7 +283,7 @@ Planned improvements:
 2. DM phishing/scam content detector
 3. Social action anomaly detection (mass follow/unfollow, spam bursts)
 4. Automated backend/frontend tests
-5. CI pipeline with GitHub Actions
+5. ~~CI pipeline with GitHub Actions~~ ✅ Added
 
 ## License
 

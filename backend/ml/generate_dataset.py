@@ -1,7 +1,12 @@
+import os
 import random
 
 import numpy as np
 import pandas as pd
+
+# Resolve the backend root regardless of the working directory.
+_BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_DATA_PATH = os.path.join(_BACKEND_DIR, "data", "user_behavior_dataset.csv")
 
 
 def generate_dataset(n_normal=5000, n_suspicious=1000):
@@ -19,7 +24,8 @@ def generate_dataset(n_normal=5000, n_suspicious=1000):
 
     df = pd.DataFrame(data)
     df = df.sample(frac=1).reset_index(drop=True)
-    df.to_csv("data/user_behavior_dataset.csv", index=False)
+    os.makedirs(os.path.dirname(_DATA_PATH), exist_ok=True)
+    df.to_csv(_DATA_PATH, index=False)
     print(f"Dataset generated: {len(df)} records ({n_normal} normal, {n_suspicious} suspicious)")
     return df
 
@@ -81,7 +87,4 @@ def generate_suspicious_record():
 
 
 if __name__ == "__main__":
-    import os
-
-    os.makedirs("data", exist_ok=True)
     generate_dataset()
